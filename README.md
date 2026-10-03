@@ -10,7 +10,7 @@ pinned: false
 ---
 
 # 🔍 Automated Fake News Detection System
-### NLP · TF-IDF · DistilBERT · Streamlit · RTX 4060 GPU
+### NLP · TF-IDF · RoBERTa (HF Inference API) · Streamlit · RTX 4060 GPU
 
 [![Python](https://img.shields.io/badge/Python-3.13-blue)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-CUDA_12.1-red)](https://pytorch.org)
@@ -40,7 +40,7 @@ fake-news-detector/
 │   ├── 02_preprocessing.py
 │   ├── 03_feature_extraction.py
 │   ├── 04_ml_models.py   ← LR, NB, SVM, RF, XGBoost
-│   └── 05_bert.py        ← DistilBERT fine-tuning (GPU)
+│   └── 05_bert.py        ← DistilBERT fine-tuning experiments (GPU)
 ├── src/
 │   ├── preprocessing.py  ← Text cleaning pipeline
 │   ├── features.py       ← TF-IDF, embeddings, sentiment
@@ -92,7 +92,7 @@ notebooks/01_eda.py              → Explore the data
 notebooks/02_preprocessing.py   → Clean and preprocess text
 notebooks/03_feature_extraction.py → TF-IDF + feature engineering
 notebooks/04_ml_models.py       → Train 5 ML models
-notebooks/05_bert.py            → Fine-tune DistilBERT on GPU
+notebooks/05_bert.py            → DistilBERT fine-tuning experiments (GPU)
 ```
 
 ### Step 4: Launch Web App
@@ -106,14 +106,14 @@ streamlit run app/app.py
 
 ## 📊 Expected Results
 
-| Model | Accuracy | F1-Score | AUC-ROC | Speed |
-|-------|----------|----------|---------|-------|
-| Complement NB | ~94% | ~0.94 | ~0.97 | ⚡ <1s |
-| Logistic Regression | ~97% | ~0.97 | ~0.99 | ⚡ <1s |
-| Linear SVC | ~97% | ~0.97 | ~0.99 | ⚡ <1s |
-| XGBoost (GPU) | ~96% | ~0.96 | ~0.98 | ⚡ <5s |
-| Voting Ensemble | ~98% | ~0.98 | ~0.99 | ⚡ <2s |
-| **DistilBERT (GPU)** | **~99%** | **~0.99** | **~0.999** | 🐢 ~2s/article |
+| Model | Accuracy | F1-Score | AUC-ROC | Speed | Mode |
+|-------|----------|----------|---------|-------|------|
+| Complement NB | ~94% | ~0.94 | ~0.97 | ⚡ <1s | Fast |
+| Logistic Regression | ~97% | ~0.97 | ~0.99 | ⚡ <1s | Fast |
+| Linear SVC | ~97% | ~0.97 | ~0.99 | ⚡ <1s | Fast |
+| XGBoost (GPU) | ~96% | ~0.96 | ~0.98 | ⚡ <5s | Fast |
+| Voting Ensemble | ~98% | ~0.98 | ~0.99 | ⚡ <2s | Fast |
+| **RoBERTa** ([hamzab/roberta-fake-news-classification](https://huggingface.co/hamzab/roberta-fake-news-classification)) | **~97%** | **~0.97** | **~0.99** | 🌐 ~2–3s/article | Accurate (HF API) |
 
 ---
 
@@ -134,8 +134,8 @@ streamlit run app/app.py
 | Random Forest | `src/model.py` |
 | XGBoost (GPU) | `src/model.py` |
 | Soft Voting Ensemble | `src/model.py` |
-| Transformer (DistilBERT) | `src/model.py` |
-| Mixed Precision Training (fp16) | `src/model.py` |
+| Transformer (RoBERTa via HF Inference API) | `app/app.py` |
+| Transfer Learning (Pre-trained HF model) | `app/app.py` |
 | Cross-Validation (Stratified K-Fold) | `notebooks/04_ml_models.py` |
 | ROC-AUC, F1, Precision, Recall | `notebooks/04_ml_models.py` |
 
@@ -143,7 +143,7 @@ streamlit run app/app.py
 
 ## 🖥️ Web App Features
 
-- **Dual mode**: Fast (TF-IDF+LR, instant) or Accurate (DistilBERT, ~2s)
+- **Dual mode**: Fast (TF-IDF + Logistic Regression, instant) or Accurate ([RoBERTa via HF Inference API](https://huggingface.co/hamzab/roberta-fake-news-classification), ~2–3s)
 - **Confidence gauge**: Visual probability display
 - **Word explanation**: Shows which words push toward FAKE/REAL (LR mode)
 - **Sentiment breakdown**: VADER negative/neutral/positive/compound scores
@@ -154,18 +154,22 @@ streamlit run app/app.py
 
 ## ⚙️ GPU Info
 
-This project is optimized for **NVIDIA RTX 4060 Laptop GPU (8GB VRAM)**:
-- PyTorch CUDA 12.1
-- DistilBERT fine-tuning: `batch_size=16`, `max_length=256` → fits in 8GB
-- Mixed precision (`torch.cuda.amp`) → 2x training speedup
+This project was trained locally on an **NVIDIA RTX 4060 Laptop GPU (8GB VRAM)**:
+- PyTorch CUDA 12.1 for ML model training
 - XGBoost GPU training via `device="cuda"`
+- DistilBERT fine-tuning experiments: `batch_size=16`, `max_length=256` → fits in 8GB
+- Mixed precision (`torch.cuda.amp`) → 2x training speedup
+
+> **Live app** uses the [`hamzab/roberta-fake-news-classification`](https://huggingface.co/hamzab/roberta-fake-news-classification) model served via **HuggingFace Inference API** — no GPU required on the server side.
 
 ---
 
 ## 📚 References
 
 - [Kaggle Fake News Dataset](https://www.kaggle.com/competitions/fake-news)
-- [DistilBERT Paper](https://arxiv.org/abs/1910.01108)
+- [hamzab/roberta-fake-news-classification (HF Model)](https://huggingface.co/hamzab/roberta-fake-news-classification)
+- [RoBERTa Paper](https://arxiv.org/abs/1907.11692)
 - [VADER Sentiment](https://github.com/cjhutto/vaderSentiment)
 - [Scikit-learn TF-IDF](https://scikit-learn.org/stable/modules/feature_extraction.html#tfidf-term-weighting)
 - [HuggingFace Transformers](https://huggingface.co/docs/transformers)
+- [HuggingFace Inference API](https://huggingface.co/docs/api-inference)
