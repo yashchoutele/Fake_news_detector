@@ -16,6 +16,15 @@ pinned: false
 [![PyTorch](https://img.shields.io/badge/PyTorch-CUDA_12.1-red)](https://pytorch.org)
 [![Transformers](https://img.shields.io/badge/HuggingFace-Transformers-yellow)](https://huggingface.co)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Web_App-green)](https://streamlit.io)
+[![Live App](https://img.shields.io/badge/🚀_Live_App-shield--fakenewsdetection.streamlit.app-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://shield-fakenewsdetection.streamlit.app/)
+
+---
+
+## 🌐 Live Demo
+
+> **Try it now →** [https://shield-fakenewsdetection.streamlit.app/](https://shield-fakenewsdetection.streamlit.app/)
+
+No setup required — paste any news article and get an instant AI-powered verdict with confidence scores, word-level explanations, sentiment analysis, and linguistic feature breakdowns.
 
 ---
 
@@ -38,7 +47,10 @@ fake-news-detector/
 │   ├── model.py          ← ML + BERT training code
 │   └── utils.py          ← Logging, plotting, data loading
 ├── app/
-│   └── app.py            ← Streamlit web app
+│   ├── app.py            ← Streamlit web app
+│   └── pages/
+│       ├── 1_Privacy_Policy.py
+│       └── 2_Terms_and_Conditions.py
 ├── models/               ← Saved .pkl + BERT checkpoints
 ├── reports/figures/      ← Auto-generated plots
 ├── requirements.txt
